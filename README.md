@@ -1,1 +1,2 @@
-# file-system-searcher-cli
+# Introduction
+**File System Searcher (FSS)** is a lightweight command-line utility designed to quickly locate files and directories by name within a specified path. It recursively searches through all subdirectories, handling inaccessible folders gracefully, and presents results in a clean, readable format.
