@@ -1,4 +1,6 @@
-﻿namespace FileSystemSearcher
+﻿using System.Text.RegularExpressions;
+
+namespace FileSystemSearcher
 {
     internal class Program
     {
@@ -22,6 +24,12 @@
                 if (string.IsNullOrEmpty(name))
                 {
                     ShowError("Name can't be empty.");
+                    continue;
+                }
+
+                if (!IsValidPattern(name))
+                {
+                    ShowError("Pattern is invalid.");
                     continue;
                 }
 
@@ -75,7 +83,10 @@
 
             foreach (var file in Directory.GetFiles(path, "*", options))
             {
-                if (Path.GetFileName(file).Equals(name, StringComparison.OrdinalIgnoreCase) || Path.GetFileNameWithoutExtension(file).Equals(name, StringComparison.OrdinalIgnoreCase))
+                string fileName = Path.GetFileName(file);
+                string fileNameWithoutExtension = Path.GetFileNameWithoutExtension(file);
+
+                if (Regex.IsMatch(fileName, name, RegexOptions.IgnoreCase) || Regex.IsMatch(fileNameWithoutExtension, name, RegexOptions.IgnoreCase))
                     files.Add(file);
             }
 
@@ -94,11 +105,28 @@
 
             foreach (var directory in Directory.GetDirectories(path, "*", options))
             {
-                if (Path.GetFileName(directory).Equals(name, StringComparison.OrdinalIgnoreCase))
+                string directoryName = Path.GetFileName(directory);
+
+                if (Regex.IsMatch(directoryName, name, RegexOptions.IgnoreCase))
                     directories.Add(directory);
             }
 
             return directories;
+        }
+
+        // UTILS
+
+        static bool IsValidPattern(string pattern)
+        {
+            try
+            {
+                new Regex(pattern);
+                return true;
+            }
+            catch (RegexParseException)
+            {
+                return false;
+            }
         }
 
         static void ShowError(string message)
